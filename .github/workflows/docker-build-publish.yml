@@ -5,8 +5,9 @@ on:
     inputs:
       org_name:
         description: "Organization Name"
-        required: true
+        required: false
         type: string
+        default: ${{ secrets.DIGITALOCEAN_ORG_NAME }}
       image_name:
         description: "Docker image name"
         required: true
