@@ -22,6 +22,8 @@ on:
         required: true
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
+      DIGITALOCEAN_ORG_NAME:
+        required: true
 
 jobs:
   build-and-push:
