@@ -5,9 +5,8 @@ on:
     inputs:
       org_name:
         description: "Organization Name"
-        required: false
+        required: true
         type: string
-        default: aimleap
       image_name:
         description: "Docker image name"
         required: true
