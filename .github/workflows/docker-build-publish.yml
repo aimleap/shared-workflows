@@ -5,9 +5,8 @@ on:
     inputs:
       org_name:
         description: "Organization Name"
-        required: false
+        required: true
         type: string
-        default: ${{ secrets.DIGITALOCEAN_ORG_NAME }}
       image_name:
         description: "Docker image name"
         required: true
@@ -23,21 +22,19 @@ on:
         required: true
       DIGITALOCEAN_ACCESS_TOKEN:
         required: true
-      DIGITALOCEAN_ORG_NAME:
-        required: true
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ inputs.branch }} # Use the specified branch (default is 'main')
+          ref: ${{ inputs.branch }}  # Use the branch provided, default to 'main'
 
-      # Step 2: Set up Docker Buildx
+      # Step 2: Set up Docker Buildx for building multi-platform images
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -49,18 +46,16 @@ jobs:
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      # Step 4: Build the Docker image
+      # Step 4: Build Docker image with a dynamic tag based on commit SHA
       - name: Build Docker image
-        env:
-          IMAGE_TAG: "registry.digitalocean.com/${{ inputs.org_name }}/${{ inputs.image_name }}:${{ github.sha }}"
         run: |
+          IMAGE_TAG="registry.digitalocean.com/${{ inputs.org_name }}/${{ inputs.image_name }}:${{ github.sha }}"
           echo "Building Docker image: $IMAGE_TAG"
           docker build -t $IMAGE_TAG .
 
       # Step 5: Push the Docker image to DigitalOcean
       - name: Push Docker image to DigitalOcean
-        env:
-          IMAGE_TAG: "registry.digitalocean.com/${{ inputs.org_name }}/${{ inputs.image_name }}:${{ github.sha }}"
         run: |
+          IMAGE_TAG="registry.digitalocean.com/${{ inputs.org_name }}/${{ inputs.image_name }}:${{ github.sha }}"
           echo "Pushing Docker image: $IMAGE_TAG"
           docker push $IMAGE_TAG
